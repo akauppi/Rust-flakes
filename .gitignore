@@ -1,4 +1,5 @@
 /target
+/.target-mp
 /Cargo.lock
 
 # Sample (big) files
