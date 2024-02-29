@@ -47,18 +47,26 @@ impl Pool {
 *
 * Provides a steady, but random stream of fish to the pond.
 */
-// tbd. By making the type 'F' in a 'type', we may be able to reduce the repetition?
-struct StreamActor<F: Fn() -> () + Unpin> {
-    call_me: F
+//nightly
+//trait MyF = Fn() -> () + Unpin + 'static;       // experimental!
+
+// stable
+trait MyF: Fn() -> () + Unpin {}
+
+// Rust note: generic on 'F' required (even though we just want this for one concrete type),
+//      because having a trait object as member would need 'dyn MyF'.
+//
+struct StreamActor /*<F>*/ {
+    call_me: dyn MyF
 }
 
-impl<F: Fn() -> () + Unpin> StreamActor<F> {
-    fn new(/*move*/ f: F) -> StreamActor<F> {
+impl StreamActor {
+    fn new(/*move*/ f: impl MyF) -> StreamActor {
         StreamActor{ call_me: f }
     }
 }
 
-impl<F: Fn() -> () + Unpin + 'static> Actor for StreamActor<F> {
+impl Actor for StreamActor {
     type Context = Context<Self>;
 }
 
@@ -66,7 +74,7 @@ impl<F: Fn() -> () + Unpin + 'static> Actor for StreamActor<F> {
 #[rtype(result = "()")]
 struct RandomTick;
 
-impl<F: Fn() -> () + Unpin + 'static> Handler<RandomTick> for StreamActor<F> {
+impl Handler<RandomTick> for StreamActor {
     type Result = ();
 
     fn handle(&mut self, msg: RandomTick, ctx: &mut Context<Self>) -> Self::Result {
