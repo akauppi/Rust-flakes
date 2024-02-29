@@ -3,5 +3,5 @@
 /Cargo.lock
 
 # Sample (big) files
-/file*.txt
+#/file*.txt
 

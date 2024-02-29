@@ -1,36 +1,32 @@
+mod pool;
+mod fish;
+
+use std::env;
+use std::time::Duration;
+
+use pool::Pool;
+use fish::Fish;
+
 use actix::prelude::*;
 
-#[derive(Message)]
-#[rtype(result = "usize")]
-struct Ping(usize);
-
-struct MyActor {
-    count: usize,
-}
-
-impl Actor for MyActor {
-    type Context = Context<Self>;
-}
-
-impl Handler<Ping> for MyActor {
-    type Result = usize;
-
-    fn handle(&mut self, msg: Ping, _ctx: &mut Context<Self>) -> Self::Result {
-        self.count += msg.0;
-
-        self.count
-    }
-}
+use log::debug;
 
 #[actix_rt::main]
 async fn main() {
-    let addr = MyActor { count: 10 }.start();
+    enable_debug();
+    let pool = Pool::new();
 
-    let res = addr.send(Ping(10)).await;
-    println!("RESULT: {}", res.unwrap());
+    let fut1 = pool.fish_for(Fish::Ahven, Duration::from_secs(3));
+    let fut2 = pool.fish_for(Fish::Hauki, Duration::from_secs(10));
 
-    let res = addr.send(Ping(10)).await;
-    println!("RESULT: {}", res.unwrap());
+    futures_util::join!(fut1, fut2);    // nb. macro does the '.await'
 
-    System::current().stop();
+    debug!("Finished.");
+}
+
+fn enable_debug() {
+    if env::var("RUST_LOG").is_err() {
+        env::set_var("RUST_LOG", "debug")
+    }
+    env_logger::init();
 }

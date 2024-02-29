@@ -1,19 +1,87 @@
 #[allow(non_snake_case)]
-mod poolActor::PoolActor;
-mod fish;
+//?mod poolActor;
 
 use std::time::Duration;
-use fish::Fish;
+
+use log::{debug};
+
+use crate::Fish;
 
 use actix::prelude::*;
+use rand::Rng;
 
-#[actix_rt::main]
-async fn main() {
-    let poolAddr = PoolActor::new().start();
-    let streamAddr = StreamActor::new(poolAddr).start();
+pub struct Pool {
+    //? poolAddr: Addr
+}
 
-    let fut1 = pool.fish_for(Fish::Ahven, Duration::from_secs(3));
-    let fut2 = pool.fish_for(Fish::Hauki, Duration::from_secs(10));
+impl Pool {
+    pub fn new() -> Pool {
+        //? let poolAddr = PoolActor::new().start();
+        let streamAddr = StreamActor::new(move || {
+            debug!("Random tick");
+        }).start();
 
-    futures_util::join(fut1, fut2) .await;
+        Pool {
+            //? poolAddr = PoolActor::new().start(),
+        }
+    }
+
+    pub async fn fish_for(&self, fish: Fish, _timeout: Duration) -> Option<Fish> {
+        debug!("Fishing for: {fish}...");
+        None        // todo!
+    }
+}
+
+/*
+* PoolActor
+*
+* Receives:
+*
+*/
+
+/*
+* StreamActor
+*
+* Receives:
+*   - RandomTick
+*
+* Provides a steady, but random stream of fish to the pond.
+*/
+// tbd. By making the type 'F' in a 'type', we may be able to reduce the repetition?
+struct StreamActor<F: Fn() -> () + Unpin> {
+    call_me: F
+}
+
+impl<F: Fn() -> () + Unpin> StreamActor<F> {
+    fn new(/*move*/ f: F) -> StreamActor<F> {
+        StreamActor{ call_me: f }
+    }
+}
+
+impl<F: Fn() -> () + Unpin + 'static> Actor for StreamActor<F> {
+    type Context = Context<Self>;
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+struct RandomTick;
+
+impl<F: Fn() -> () + Unpin + 'static> Handler<RandomTick> for StreamActor<F> {
+    type Result = ();
+
+    fn handle(&mut self, msg: RandomTick, ctx: &mut Context<Self>) -> Self::Result {
+        (self.call_me)();
+
+        // Note: They warn it's "slow", but making a commonly used (static?) random-number-generator
+        //      in Rust is an Advanced Feat!!
+        //
+        //      hmm.. ideally, we could get one from the 'Context'?
+        //
+        let mut rng = rand::thread_rng();
+
+        let d: Duration = Duration::from_millis(rng.gen_range(1000..5000));
+        ctx.notify_later(RandomTick, d);
+
+        ()
+    }
 }
