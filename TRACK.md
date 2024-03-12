@@ -16,3 +16,23 @@ Collection of items the author is interested to see the status of.
 	
 	- [ ] Make a sample in the flakes :)
 
+
+## Getting `stream` into the `std::` module
+
+Do we need it to be?
+
+Do `futures-rs` and `tokio` provide enough?
+
+
+## `spmc` channel?
+
+- Last (2024) entry of ["add an mpmc channel"](https://github.com/rust-lang/rfcs/issues/848)
+
+   The `Pool` approach could benefit from this.
+
+
+## Trait aliases
+
+- ["Tracking issue for trait aliases"](https://github.com/rust-lang/rust/issues/41517)
+
+   
