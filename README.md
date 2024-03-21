@@ -4,20 +4,34 @@
 <img src="https://images.fineartamerica.com/images/artworkimages/mediumlarge/1/pile-of-rust-flakes-garry-loss.jpg" title="Architecture Photograph - Pile of Rust Flakes by Garry Loss" alt="Architecture Photograph - Pile of Rust Flakes by Garry Loss" />
 
 <p align=right><font color=gray><i>Image by Garry Loss, 2016, <a href=https://pixels.com/featured/pile-of-rust-flakes-garry-loss.html>pixels.com</a></i></font></p>
-<!-_- tbd. license the image; see the gecko!! ;)
+
+<!_- Image is UNLICENSED. Have tried to be in touch with Garry. DO NOT COMMIT!!!
 -->
 
 Various tidbits of Rust code.
 
-## Big file
+## Requirements
 
-Streaming a file.
+- Rust installed, via `rustup`
 
-In Rust, async/concurrency story is still developing (Jan'24). The author is familiar with the [Akka Streams](https://doc.akka.io/docs/akka/current/stream/index.html) ecosystem, and this flake is about how to replicate such, under Rust.
+## Steps
 
-Ideally, using least external crates. O:)
+```
+$ cargo run --example {futures|...}
+```
+
+- `futures` - experiments with [`futures`](https://docs.rs/futures/latest/futures/) streams etc.
+- ...
+
+## Note!
+
+One goal is to keep the dependcies relatively shallow. 
+
+Example: [Actix](https://actix.rs) pulled in all of [Tokio](https://tokio.rs). That's considered heavy (but is relative, as all weights are!).
 
 
+
+<!-- REMOVE
 ### Setup
 
 Create a file.
@@ -28,13 +42,11 @@ $ for i in {1..100000}; do echo $i; done > file2.txt
 
 The file's supposed to be line-wise (is text; has newlines). Otherwise the content doesn't matter.
 
-<!-- delete
 >**Creating a big file on macOS**
 >
 >```
 >$ mkfile -n 1g ~/Temp/big_file
 >```
--->
 
 ### Running
 
@@ -43,6 +55,7 @@ $ cargo run --example stream -- file2.txt
 ```
 
 This would do something with the file in question
+-->
 
 
 <!--

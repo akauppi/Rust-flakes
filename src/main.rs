@@ -1,4 +1,6 @@
 
+use rand;
+
 #[derive(Copy, Clone)]
 enum Foo {
     Bar = 1,

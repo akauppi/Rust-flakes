@@ -1,7 +1,8 @@
 /target
-/.target-mp
 /Cargo.lock
 
-# Sample (big) files
-#/file*.txt
+# A thing the author uses; ignore
+/target.mac
 
+# Sample big
+#/file.big.jsonl
