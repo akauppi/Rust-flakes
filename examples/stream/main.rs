@@ -55,7 +55,8 @@ async fn parcel_bytes() {
     let x: dyn Stream<Item=u8> = stream::iter(DATA.to_vec());
         // Rust compiler: "expected `dyn Stream`, found `Iter<IntoIter<u8>>`"
 
-    let x = stream::iter(DATA.to_vec()) as Stream<Item=u8>;
+    let x: dyn Stream<Item=u8> = stream::iter(DATA.to_vec()) as Stream<Item=u8>;
+        // Rust compiler: "cast to unsized type: `futures_util::stream::Iter<std::vec::IntoIter<u8>>` as `dyn Stream<Item = u8>`"
 
     let xx = x.inspect(|x| debug!("{}", x))
         .collect::<Vec<u8>>() .await;
